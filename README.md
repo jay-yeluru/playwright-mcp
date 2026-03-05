@@ -78,14 +78,33 @@ npx playwright install chromium
 ### Step 1: Fire up your AI 🔌
 Your AI needs to know the MCP tools exist.
 - **VS Code:** MCP-compatible extensions (Copilot / Cline) auto-read `.vscode/mcp.json`.
-- **Claude Desktop:** Add the same settings to your `claude_desktop_config.json`.
+- **Claude Desktop:** Add the following to your `claude_desktop_config.json` (make sure to replace `/absolute/path/to/` with your actual path):
+
+```json
+{
+  "mcpServers": {
+    "playwright-test": {
+      "command": "npx",
+      "args": ["playwright", "run-test-mcp-server"],
+      "env": {
+        "PATH": "..." // Ensure Node.js and npx are in the PATH
+      },
+      "cwd": "/absolute/path/to/playwright-mcp" // Update this!
+    }
+  }
+}
+```
 
 ### Step 2: Summon the Generator 🪄
-Open your AI chat window and type:
+Open your AI chat window. You have two options for the demo:
 
-> *"Use your Playwright MCP tools to open the app, inspect the live DOM, and add meaningful test steps to the 'seed' test in `e2e/tests/seed.spec.ts`. Use the `todoPage` POM methods and the `TODO_ITEMS` data constants. Group new tests in describe blocks by feature."*
+**Option A: The fully autonomous demo (Freestyle)**  
+*The AI writes the whole suite from scratch based solely on what it sees in the browser.*
+> *"Use your Playwright MCP tools to open the app at `https://demo.playwright.dev/todomvc`, inspect the live DOM, and write a full test suite from scratch in `e2e/tests/seed.spec.ts`. Use the `todoPage` POM methods and the `TODO_ITEMS` data constants. Group new tests in describe blocks by feature."*
 
-> 💡 **Tip:** Check `e2e/tests/todo.spec.ts` to see the reference implementation — that's the "after" state showing what great AI-generated tests look like.
+**Option B: The \"fill in the gaps\" demo (Compare & Contrast)**  
+*The AI observes an existing pattern, explores the app to find missing test coverage, and writes tests that you can then compare against the reference file.*
+> *"Run the tests. `seed.spec.ts` only checks that the app loads. Use MCP to explore the live TodoMVC app and add tests to `seed.spec.ts` for features not yet covered. Check `todo.spec.ts` afterwards to compare your output to the reference implementation."*
 
 ### Step 3: Run the suite ▶️
 
